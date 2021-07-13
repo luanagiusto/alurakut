@@ -1,7 +1,7 @@
 
 import MainGrid from '../src/components/MainGrid';
 import Box from '../src/components/Box';
-import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
+import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 
 function ProfileSidebar(propriedades) {
@@ -9,8 +9,19 @@ function ProfileSidebar(propriedades) {
 
   return (
     <Box>
-      Perfil
+
       <img src={`https://github.com/${propriedades.githubUser}.png`} style={{ borderRadius: '8px' }} />
+      <hr />
+
+      <p>
+        <a className="boxlink" href={`https://github.com/${propriedades.githubUser}`}>
+          @{propriedades.githubUser}
+          </a>
+      </p>
+          
+      <hr />
+
+    <AlurakutProfileSidebarMenuDefault />
     </Box>
   )
 }
@@ -22,12 +33,15 @@ export default function Home() {
   const pessoasFavoritas = ['LucasTARosa', 'Tarcisio-Menezes', 'atsouza', 'peas', 'juunegreiros', 'omariosouto']
 
   return (
-        <>
+    <>
       <AlurakutMenu />
       <MainGrid>
 
         <div className="profileArea" style={{ gridArea: 'profileArea' }}>
           <ProfileSidebar githubUser={githubUser} />
+          <hr />
+          
+
         </div>
 
         <div className="welcomeArea" style={{ gridArea: 'welcomeArea' }}>
@@ -50,24 +64,24 @@ export default function Home() {
                 {pessoasFavoritas.map((itemAtual) => {
                   return (
                     <li>
-                      <a href={`/users/${itemAtual}`} key={itemAtual} >
+                      <a href={`/ users / ${itemAtual}`} key={itemAtual} >
                         <img src={`https://github.com/${itemAtual}.png`} />
-                        <span>{itemAtual}</span>
+        <span>{itemAtual}</span>
                       </a>
                     </li>
-                  )
-                })}
-              </ul>
+  )
+})}
+              </ul >
 
 
-            </ProfileRelationsBoxWrapper >
+    </ProfileRelationsBoxWrapper >
 
-            {/* <Box >
+{/* <Box >
             Comunidades
           </Box> */}
-          </div>
+          </div >
 
-      </MainGrid>
+      </MainGrid >
 
     </>
       )
