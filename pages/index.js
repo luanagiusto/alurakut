@@ -27,6 +27,32 @@ function ProfileSidebar(propriedades) {
 }
 
 
+function ProfileRelationsBox(propriedades) {
+  return (
+    <ProfileRelationsBoxWrapper >
+
+      <h2 className="smallTitle">
+        {propriedades.title} ({propriedades.items.length})
+      </h2>
+
+      {/* <ul>
+              {seguidores.map((itemAtual) => {
+                return (
+                  <li key={itemAtual}>
+                    <a href={`https://github.com/${itemAtual}.png`}  >
+                      <img src={itemAtual.image} />
+                      <span>{itemAtual.title}</span>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul > */}
+
+
+    </ProfileRelationsBoxWrapper >
+  )
+}
+
 
 export default function Home() {
 
@@ -37,7 +63,26 @@ export default function Home() {
     image: 'https://img10.orkut.br.com/community/52cc4290facd7fa700b897d8a1dc80aa.jpg'
   }]);
 
-  const pessoasFavoritas = ['LucasTARosa', 'Tarcisio-Menezes', 'atsouza', 'peas', 'juunegreiros', 'omariosouto']
+  const pessoasFavoritas = [
+    'LucasTARosa',
+    'Tarcisio-Menezes',
+    'atsouza',
+    'peas',
+    'juunegreiros',
+    'omariosouto']
+
+
+  const [seguidores, setSeguidores] = React.useState([]);
+  React.useEffect(function () {
+    fetch('https://api.github.com/users/luanagiusto/followers')
+      .then(function (respostaDoServidor) {
+        return respostaDoServidor.json();
+      })
+      .then(function (respostaCompleta) {
+        setSeguidores(respostaCompleta);
+      })
+  }, [])
+
 
   return (
     <>
@@ -102,6 +147,9 @@ export default function Home() {
         </div>
 
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
+
+          <ProfileRelationsBox title="Seguidores" items={seguidores} />
+
 
           <ProfileRelationsBoxWrapper >
             <ul>
