@@ -1,5 +1,7 @@
 
 import React from 'react';
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
 import MainGrid from '../src/components/MainGrid';
 import Box from '../src/components/Box';
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
@@ -8,7 +10,7 @@ import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 function ProfileSidebar(propriedades) {
 
   return (
-    <Box as='aside'>
+    <Box as="aside">
 
       <img src={`https://github.com/${propriedades.githubUser}.png`} style={{ borderRadius: '8px' }} />
       <hr />
@@ -54,9 +56,9 @@ function ProfileRelationsBox(propriedades) {
 }
 
 
-export default function Home() {
+export default function Home(props) {
 
-  const usuarioAleatorio = 'luanagiusto';
+  const usuarioAleatorio = props.githubUser;
   const [comunidades, setComunidades] = React.useState([]);
   // const comunidades = comunidades[0];
   // const alteradorDeComunidades/setComunidades = comunidades[1];
@@ -82,37 +84,36 @@ export default function Home() {
       .then(function (respostaCompleta) {
         setSeguidores(respostaCompleta);
       })
-  }, []);
 
-  // API GraphQL
-  fetch('https://graphql.datocms.com/', {
-    method: 'POST',
-    headers: {
-      'Authorization': '67e3c89f93defe5d8e853532d2a594',
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify({
-      "query": `query {
-      allCommunities {
-        id 
-        title
-        imageUrl
-        creatorslug
-      }
+
+    // API GraphQL
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'cb96ed0b8108bc9ba77ca7b2b6d81b',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        "query": `query {
+          allCommunities {
+            id
+            title
+            imageurl
+            createslug
+          }
     } ` })
-  })
-    .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
-    .then((respostaCompleta) => {
-      const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
-      // console.log(comunidadesVindasDoDato)
-      setComunidades(comunidadesVindasDoDato)
     })
-  // .then(function (response) {
-  //   return response.json()
-  // }, [])
+      .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
+      .then((respostaCompleta) => {
+        const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
+
+        // console.log(comunidadesVindasDoDato);
+        setComunidades(comunidadesVindasDoDato);
+      });
 
 
+  }, [])
 
   // console.log('seguidores antes do return', seguidores);
 
@@ -152,7 +153,7 @@ export default function Home() {
 
               const comunidade = {
                 title: dadosDoForm.get('title'),
-                imageUrl: dadosDoForm.get('image'),
+                imageurl: dadosDoForm.get('image'),
                 creatorslug: usuarioAleatorio,
               }
 
@@ -207,7 +208,7 @@ export default function Home() {
                 return (
                   <li key={itemAtual.id}>
                     <a href={`/communities/${itemAtual.id}`}>
-                      <img src={itemAtual.imageUrl} />
+                      <img src={itemAtual.imageurl} />
                       <span>{itemAtual.title}</span>
                     </a>
                   </li>
@@ -242,4 +243,31 @@ export default function Home() {
 
     </>
   )
+}
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context)
+  const token = cookies.USER_TOKEN;
+  const { isAuthenticated } = await fetch('https://alurakut.vercel.app/api/auth', {
+    headers: {
+      Authorization: token
+    }
+  })
+    .then((resposta) => resposta.json())
+
+  if (!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
+    }
+  }
+
+  const { githubUser } = jwt.decode(token);
+  return {
+    props: {
+      githubUser
+    }, // will be passed to the page component as props
+  }
 }
